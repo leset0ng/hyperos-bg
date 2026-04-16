@@ -86,3 +86,69 @@ For GitHub Actions, consider using [`voidzero-dev/setup-vp`](https://github.com/
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp check` and `vp test` to validate changes.
 <!--VITE PLUS END-->
+
+# Project-Specific Guidance
+
+## Repository purpose
+
+This package ships a single React component, `BgEffectBackground`, that renders a HyperOS-style animated background using `canvas` and WebGL.
+
+The current source of truth lives in `src/`, not in `dist/`.
+
+## Important files
+
+- `src/BgEffectBackground.tsx` — public component, props, lifecycle, WebGL bootstrapping
+- `src/index.ts` — public exports
+- `src/webgl/os2-preset.ts` — OS2 preset data
+- `src/webgl/os3-preset.ts` — OS3 preset data
+- `src/webgl/os2-shader.ts` — OS2 fragment shader source
+- `src/webgl/os3-shader.ts` — OS3 fragment shader source
+- `src/webgl/presets.ts` / `src/webgl/shaders.ts` — selector modules
+- `src/webgl/utils.ts` / `src/webgl/types.ts` — shared helpers and typing
+- `demo/main.tsx` / `demo/styles.css` — interactive preview playground
+- `tests/index.test.tsx` — render-level coverage for the exported component
+- `dist/` — generated package output; do not hand-edit
+
+## Working rules for agents
+
+- Preserve the package's single-component API unless the user explicitly asks for broader changes.
+- Do not hand-edit `dist/`. Regenerate it with `vp pack` when build artifacts are needed.
+- Keep browser-only APIs (`window`, `ResizeObserver`, WebGL context creation) inside effects or guarded code paths so server rendering remains safe.
+- Prefer the existing dependency footprint. Avoid adding runtime dependencies unless clearly necessary.
+- When changing shader uniforms, preset fields, or interpolation behavior, make sure OS2 and OS3 modes remain coherent.
+- When adding or changing preset fields, keep coverage for both device types (`PHONE`, `PAD`) and both color schemes (`light`, `dark`).
+- Keep the public prop names stable unless the user asked for a breaking API change.
+- `content` intentionally overrides `children`; preserve that behavior unless requirements change.
+- `bgStyle` and `dynamicBackground` are required in the public API right now; reflect that in docs and tests if touched.
+
+## Required follow-up when changing public behavior
+
+If you touch the public component API, rendering behavior, presets, or shader selection, also update the related surfaces:
+
+- `README.md` — usage examples and prop documentation
+- `demo/main.tsx` — preview controls and example snippet
+- `tests/index.test.tsx` — coverage for the changed behavior
+- `src/index.ts` — exports, if the public surface changes
+
+Run `vp pack` as well when exported types or package output may have changed.
+
+## Validation expectations
+
+Minimum validation for code changes:
+
+```bash
+vp check
+vp test
+```
+
+Also run this when changing exports, types, or publishable output:
+
+```bash
+vp pack
+```
+
+## Documentation expectations
+
+- Keep README focused on the actual shipped component instead of starter-template language.
+- Document defaults, required props, and meaningful behavior differences such as OS2 vs OS3 and static vs dynamic background.
+- Mention Vite+ commands when describing local development in this repository.

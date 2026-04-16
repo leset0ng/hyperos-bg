@@ -1,0 +1,270 @@
+:root {
+  color-scheme: light dark;
+  font-family: "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(180deg, rgb(243 239 250) 0%, rgb(226 233 251) 100%);
+  color: rgb(37 40 54);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.preview-shell {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.preview-layout {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 28px;
+  background: rgb(255 255 255 / 0.68);
+  border: 1px solid rgb(255 255 255 / 0.72);
+  box-shadow:
+    0 24px 80px rgb(96 115 173 / 0.15),
+    inset 0 1px 0 rgb(255 255 255 / 0.8);
+}
+
+.control-panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-panel__header h1,
+.preview-card h2 {
+  margin: 0;
+  letter-spacing: -0.04em;
+}
+
+.control-panel__header h1 {
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 0.95;
+}
+
+.control-panel__header p,
+.preview-card p {
+  margin: 0;
+  color: rgb(62 66 87 / 0.82);
+  line-height: 1.6;
+}
+
+.control-group,
+.range-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(98 92 145);
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.segmented-control button {
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: rgb(71 73 97);
+  background: rgb(255 255 255 / 0.7);
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.segmented-control button:hover {
+  transform: translateY(-1px);
+}
+
+.segmented-control button.is-active {
+  color: white;
+  background: linear-gradient(135deg, rgb(98 106 218), rgb(183 105 227));
+}
+
+.control-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.toggle-card,
+.range-card {
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 0.56);
+  border: 1px solid rgb(255 255 255 / 0.7);
+}
+
+.toggle-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.toggle-card input {
+  margin-top: 2px;
+}
+
+.toggle-card span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-card small {
+  color: rgb(95 99 126 / 0.86);
+  line-height: 1.45;
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.range-row output {
+  min-width: 42px;
+  text-align: right;
+  font-weight: 700;
+  color: rgb(71 73 97);
+}
+
+.preview-stage {
+  min-width: 0;
+}
+
+.preview-background {
+  width: 100%;
+  min-height: 560px;
+  border-radius: 32px;
+  box-shadow:
+    0 24px 80px rgb(96 115 173 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(255 255 255 / 0.6);
+}
+
+.preview-card {
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: clamp(24px, 5vw, 48px);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.22));
+}
+
+.preview-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.72);
+  color: rgb(90 88 131);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.preview-card h2 {
+  font-size: clamp(40px, 8vw, 88px);
+  line-height: 0.95;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: linear-gradient(180deg, rgb(12 16 29) 0%, rgb(16 20 34) 100%);
+    color: rgb(233 236 245);
+  }
+
+  .control-panel {
+    background: rgb(20 23 37 / 0.82);
+    border-color: rgb(255 255 255 / 0.08);
+    box-shadow: 0 24px 80px rgb(0 0 0 / 0.32);
+  }
+
+  .control-panel__header p,
+  .preview-card p,
+  .toggle-card small {
+    color: rgb(226 228 239 / 0.82);
+  }
+
+  .control-label,
+  .range-row output,
+  .segmented-control button {
+    color: rgb(227 221 251);
+  }
+
+  .segmented-control button,
+  .toggle-card,
+  .range-card,
+  .preview-badge {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  .preview-badge {
+    color: rgb(228 218 255);
+  }
+}
+
+@media (width <= 980px) {
+  .preview-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 640px) {
+  .preview-shell {
+    padding: 16px;
+  }
+
+  .control-panel {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .preview-background,
+  .preview-card {
+    min-height: 420px;
+  }
+}

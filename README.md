@@ -1,5 +1,14 @@
 # hyperos-bg
 
+[![npm version](https://img.shields.io/npm/v/hyperos-bg)](https://www.npmjs.com/package/hyperos-bg)
+[![npm downloads](https://img.shields.io/npm/dm/hyperos-bg)](https://www.npmjs.com/package/hyperos-bg)
+[![license](https://img.shields.io/npm/l/hyperos-bg)](https://github.com/leset0ng/hyperos-bg/blob/main/package.json)
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-181717?logo=github)](https://leset0ng.github.io/hyperos-bg/)
+[![GitHub stars](https://img.shields.io/github/stars/leset0ng/hyperos-bg?style=social)](https://github.com/leset0ng/hyperos-bg/stargazers)
+[![last commit](https://img.shields.io/github/last-commit/leset0ng/hyperos-bg)](https://github.com/leset0ng/hyperos-bg/commits/main)
+
+[Live Demo](https://leset0ng.github.io/hyperos-bg/) · [GitHub Repository](https://github.com/leset0ng/hyperos-bg) · [npm Package](https://www.npmjs.com/package/hyperos-bg)
+
 A React background component that recreates the soft animated HyperOS-style backdrop with WebGL.
 
 The package currently exposes a single component: `BgEffectBackground`.
@@ -23,6 +32,21 @@ Many thanks to the original author(s) and the `compose-miuix-ui/miuix` project f
 - Content slot via `children` or the `content` prop
 - SSR-friendly markup output with browser-only WebGL setup in `useEffect`
 
+## Installation
+
+```bash
+npm install hyperos-bg
+```
+
+```bash
+pnpm add hyperos-bg
+```
+
+Peer dependencies:
+
+- `react >= 18`
+- `react-dom >= 18`
+
 ## Component API
 
 ```tsx
@@ -45,6 +69,34 @@ import { BgEffectBackground } from "hyperos-bg";
 | `alpha`             | `() => number`                   | no       | `() => 1`   | Returns the current effect alpha. Values are clamped to `0..1`.                |
 | `content`           | `ReactNode \| (() => ReactNode)` | no       | `undefined` | Content rendered above the canvas. Takes priority over `children`.             |
 | `children`          | `ReactNode`                      | no       | `undefined` | Fallback content when `content` is not provided.                               |
+
+## TypeScript usage
+
+The package ships TypeScript declarations and exports `BgEffectBackgroundProps`.
+
+```tsx
+import { BgEffectBackground, type BgEffectBackgroundProps } from "hyperos-bg";
+
+const backgroundProps: BgEffectBackgroundProps = {
+  dynamicBackground: true,
+  effectBackground: true,
+  deviceType: "PAD",
+  colorScheme: "dark",
+  bgStyle: { opacity: 1 },
+};
+
+export function TypedHero() {
+  return (
+    <BgEffectBackground
+      {...backgroundProps}
+      alpha={() => 0.92}
+      style={{ minHeight: 480, borderRadius: 28 }}
+    >
+      <div style={{ minHeight: 480 }} />
+    </BgEffectBackground>
+  );
+}
+```
 
 ## Usage
 
@@ -148,14 +200,6 @@ tests/
 - Animated transitions are driven by a spring-smoothed stage index.
 - The default non-full-size mode draws into a cropped region (`78%` of host height).
 - The package exports only `BgEffectBackground` and `BgEffectBackgroundProps`.
-
-## Demo site
-
-The demo can be deployed to GitHub Pages from this repository and is intended to serve the interactive preview from `demo/main.tsx`.
-
-Expected URL:
-
-- `https://leset0ng.github.io/hyperos-bg/`
 
 ## Validation checklist
 

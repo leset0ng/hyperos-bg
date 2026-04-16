@@ -17,6 +17,7 @@ function getSystemColorScheme(): ColorScheme {
 function App() {
   const [deviceType, setDeviceType] = useState<DeviceType>("PAD");
   const [colorScheme, setColorScheme] = useState<ColorScheme>(getSystemColorScheme);
+  const [followsSystemColorScheme, setFollowsSystemColorScheme] = useState(true);
   const [isOs3Effect, setIsOs3Effect] = useState(true);
   const [dynamicBackground, setDynamicBackground] = useState(true);
   const [effectBackground, setEffectBackground] = useState(true);
@@ -66,6 +67,10 @@ function App() {
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const updateColorScheme = () => {
+      if (!followsSystemColorScheme) {
+        return;
+      }
+
       setColorScheme(mediaQuery.matches ? "dark" : "light");
     };
 
@@ -75,10 +80,16 @@ function App() {
     return () => {
       mediaQuery.removeEventListener("change", updateColorScheme);
     };
-  }, []);
+  }, [followsSystemColorScheme]);
+
+  const applyManualColorScheme = (nextColorScheme: ColorScheme) => {
+    setFollowsSystemColorScheme(false);
+    setColorScheme(nextColorScheme);
+  };
 
   const reset = () => {
     setDeviceType("PAD");
+    setFollowsSystemColorScheme(true);
     setColorScheme(getSystemColorScheme());
     setIsOs3Effect(true);
     setDynamicBackground(true);
@@ -140,14 +151,14 @@ function App() {
                 <button
                   className={colorScheme === "light" ? "is-active" : undefined}
                   type="button"
-                  onClick={() => setColorScheme("light")}
+                  onClick={() => applyManualColorScheme("light")}
                 >
                   Light
                 </button>
                 <button
                   className={colorScheme === "dark" ? "is-active" : undefined}
                   type="button"
-                  onClick={() => setColorScheme("dark")}
+                  onClick={() => applyManualColorScheme("dark")}
                 >
                   Dark
                 </button>

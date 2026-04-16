@@ -114,7 +114,11 @@ Useful commands:
 vp check
 vp test
 vp pack
+vp build
 ```
+
+- `vp build` builds the demo site for GitHub Pages into `site/`
+- `vp pack` builds the publishable package into `dist/`
 
 ## Project structure
 
@@ -144,6 +148,14 @@ tests/
 - Animated transitions are driven by a spring-smoothed stage index.
 - The default non-full-size mode draws into a cropped region (`78%` of host height).
 - The package exports only `BgEffectBackground` and `BgEffectBackgroundProps`.
+
+## Demo site
+
+The demo can be deployed to GitHub Pages from this repository and is intended to serve the interactive preview from `demo/main.tsx`.
+
+Expected URL:
+
+- `https://leset0ng.github.io/hyperos-bg/`
 
 ## Validation checklist
 

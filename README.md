@@ -33,18 +33,18 @@ import { BgEffectBackground } from "hyperos-bg";
 
 `BgEffectBackground` extends `ComponentPropsWithoutRef<"div">` except for the native `content` prop.
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `dynamicBackground` | `boolean` | yes | - | Enables animated stage-to-stage color interpolation. |
-| `bgStyle` | `CSSProperties` | yes | - | Inline styles applied to the internal `<canvas>`. |
-| `isFullSize` | `boolean` | no | `false` | Uses the full host height instead of the default cropped draw region. |
-| `effectBackground` | `boolean` | no | `true` | Disables the shader contribution when `false` while preserving layout/content. |
-| `isOs3Effect` | `boolean` | no | `true` | Switches between the newer OS3 shader/preset set and the older OS2 one. |
-| `deviceType` | `"PHONE" \| "PAD"` | no | `"PAD"` | Selects the geometric preset family. |
-| `colorScheme` | `"light" \| "dark"` | no | `"light"` | Selects the preset color scheme. |
-| `alpha` | `() => number` | no | `() => 1` | Returns the current effect alpha. Values are clamped to `0..1`. |
-| `content` | `ReactNode \| (() => ReactNode)` | no | `undefined` | Content rendered above the canvas. Takes priority over `children`. |
-| `children` | `ReactNode` | no | `undefined` | Fallback content when `content` is not provided. |
+| Prop                | Type                             | Required | Default     | Description                                                                    |
+| ------------------- | -------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------ |
+| `dynamicBackground` | `boolean`                        | yes      | -           | Enables animated stage-to-stage color interpolation.                           |
+| `bgStyle`           | `CSSProperties`                  | yes      | -           | Inline styles applied to the internal `<canvas>`.                              |
+| `isFullSize`        | `boolean`                        | no       | `false`     | Uses the full host height instead of the default cropped draw region.          |
+| `effectBackground`  | `boolean`                        | no       | `true`      | Disables the shader contribution when `false` while preserving layout/content. |
+| `isOs3Effect`       | `boolean`                        | no       | `true`      | Switches between the newer OS3 shader/preset set and the older OS2 one.        |
+| `deviceType`        | `"PHONE" \| "PAD"`               | no       | `"PAD"`     | Selects the geometric preset family.                                           |
+| `colorScheme`       | `"light" \| "dark"`              | no       | `"light"`   | Selects the preset color scheme.                                               |
+| `alpha`             | `() => number`                   | no       | `() => 1`   | Returns the current effect alpha. Values are clamped to `0..1`.                |
+| `content`           | `ReactNode \| (() => ReactNode)` | no       | `undefined` | Content rendered above the canvas. Takes priority over `children`.             |
+| `children`          | `ReactNode`                      | no       | `undefined` | Fallback content when `content` is not provided.                               |
 
 ## Usage
 

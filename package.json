@@ -1,16 +1,16 @@
 {
   "name": "hyperos-bg",
-  "version": "0.0.0",
-  "description": "A minimal React component package starter.",
-  "homepage": "https://github.com/author/library#readme",
+  "version": "0.1.0",
+  "description": "A React component that recreates the HyperOS-style animated background with WebGL.",
+  "homepage": "https://github.com/leset0ng/hyperos-bg#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/leset0ng/hyperos-bg/issues"
   },
   "license": "MIT",
   "author": "Author Name <author.name@mail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/leset0ng/hyperos-bg.git"
   },
   "files": [
     "dist"

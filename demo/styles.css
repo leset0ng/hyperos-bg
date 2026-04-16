@@ -1,24 +1,29 @@
 :root {
-  color-scheme: light dark;
-  font-family: "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-  background: linear-gradient(180deg, rgb(243 239 250) 0%, rgb(226 233 251) 100%);
-  color: rgb(37 40 54);
+  color-scheme: light;
+  font-family: "Instrument Sans", "Avenir Next", "Segoe UI", sans-serif;
+  background: oklch(0.96 0.018 73);
+  color: oklch(0.24 0.03 278);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 button,
 input,
-textarea,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -26,245 +31,467 @@ button {
   cursor: pointer;
 }
 
-.preview-shell {
+.demo-page {
+  position: relative;
   min-height: 100vh;
-  padding: 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in oklab, oklch(0.93 0.05 15) 74%, transparent) 0,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 88% 14%,
+      color-mix(in oklab, oklch(0.91 0.05 310) 76%, transparent) 0,
+      transparent 28%
+    ),
+    linear-gradient(180deg, oklch(0.97 0.014 80) 0%, oklch(0.93 0.022 265) 100%);
+  color: oklch(0.24 0.03 278);
 }
 
-.preview-layout {
-  width: min(1320px, 100%);
+.demo-page.theme-dark {
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in oklab, oklch(0.34 0.045 305) 28%, transparent) 0,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 16%,
+      color-mix(in oklab, oklch(0.42 0.04 245) 28%, transparent) 0,
+      transparent 26%
+    ),
+    linear-gradient(180deg, oklch(0.18 0.022 278) 0%, oklch(0.14 0.02 280) 100%);
+  color: oklch(0.93 0.018 285);
+}
+
+.demo-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.demo-orb--one {
+  top: -7rem;
+  left: -5rem;
+  width: 18rem;
+  height: 18rem;
+  background: color-mix(in oklab, oklch(0.88 0.08 350) 64%, transparent);
+}
+
+.demo-orb--two {
+  right: -2rem;
+  bottom: 8rem;
+  width: 16rem;
+  height: 16rem;
+  background: color-mix(in oklab, oklch(0.83 0.06 250) 56%, transparent);
+}
+
+.demo-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1380px, 100%);
   margin: 0 auto;
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.hero-panel {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) auto;
   gap: 24px;
-  align-items: stretch;
+  align-items: end;
+  margin-bottom: clamp(20px, 3vw, 32px);
 }
 
-.control-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 24px;
-  border-radius: 28px;
-  background: rgb(255 255 255 / 0.68);
-  border: 1px solid rgb(255 255 255 / 0.72);
-  box-shadow:
-    0 24px 80px rgb(96 115 173 / 0.15),
-    inset 0 1px 0 rgb(255 255 255 / 0.8);
+.hero-copy {
+  display: grid;
+  gap: 14px;
+  max-width: 52rem;
 }
 
-.control-panel__header {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.control-panel__header h1,
-.preview-card h2 {
-  margin: 0;
-  letter-spacing: -0.04em;
-}
-
-.control-panel__header h1 {
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 0.95;
-}
-
-.control-panel__header p,
-.preview-card p {
-  margin: 0;
-  color: rgb(62 66 87 / 0.82);
-  line-height: 1.6;
-}
-
-.control-group,
-.range-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.control-label {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.hero-kicker,
+.section-heading span,
+.preview-caption {
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(98 92 145);
 }
 
-.segmented-control {
+.hero-kicker {
+  color: oklch(0.48 0.05 300);
+}
+
+.hero-copy h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-size: clamp(3.2rem, 7vw, 6.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+  text-wrap: balance;
+}
+
+.hero-copy p {
+  margin: 0;
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  line-height: 1.7;
+  color: color-mix(in oklab, currentColor 72%, transparent);
+}
+
+.hero-actions {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.ghost-button,
+.segmented-grid button {
+  appearance: none;
+  border: 1px solid transparent;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.ghost-button {
+  padding: 0.9rem 1.15rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, oklch(0.98 0.01 80) 74%, transparent);
+  border-color: color-mix(in oklab, currentColor 12%, transparent);
+  color: inherit;
+}
+
+.ghost-button:hover,
+.segmented-grid button:hover {
+  transform: translateY(-1px);
+}
+
+.hero-note {
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: color-mix(in oklab, currentColor 5%, transparent);
+  color: color-mix(in oklab, currentColor 74%, transparent);
+}
+
+.studio-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: clamp(18px, 2vw, 28px);
+  align-items: start;
+}
+
+.control-column,
+.preview-frame {
+  border: 1px solid color-mix(in oklab, currentColor 10%, transparent);
+  background: color-mix(in oklab, oklch(0.99 0.005 80) 70%, transparent);
+  box-shadow: 0 28px 70px rgb(49 38 91 / 0.08);
+}
+
+.control-column {
+  display: grid;
+  gap: 18px;
+  padding: clamp(18px, 2.2vw, 24px);
+  border-radius: 1.8rem;
+  position: sticky;
+  top: 20px;
+}
+
+.control-section,
+.control-stack,
+.code-card {
+  margin: 0;
+}
+
+.control-section {
+  display: grid;
+  gap: 12px;
+}
+
+.section-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.section-heading span {
+  color: color-mix(in oklab, currentColor 50%, transparent);
+}
+
+.section-heading strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.segmented-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.segmented-control button {
-  border: 0;
-  border-radius: 16px;
-  padding: 12px 14px;
-  color: rgb(71 73 97);
-  background: rgb(255 255 255 / 0.7);
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+.segmented-grid button {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: color-mix(in oklab, currentColor 4%, transparent);
+  color: inherit;
 }
 
-.segmented-control button:hover {
-  transform: translateY(-1px);
+.segmented-grid button.is-active {
+  background: oklch(0.28 0.04 282);
+  color: oklch(0.98 0.008 80);
 }
 
-.segmented-control button.is-active {
-  color: white;
-  background: linear-gradient(135deg, rgb(98 106 218), rgb(183 105 227));
-}
-
-.control-grid {
+.control-stack {
   display: grid;
   gap: 10px;
 }
 
-.toggle-card,
-.range-card {
-  padding: 14px 16px;
-  border-radius: 20px;
-  background: rgb(255 255 255 / 0.56);
-  border: 1px solid rgb(255 255 255 / 0.7);
+.toggle-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 0.95rem 1rem;
+  border-radius: 1.15rem;
+  background: color-mix(in oklab, currentColor 4.5%, transparent);
 }
 
-.toggle-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.toggle-card input {
-  margin-top: 2px;
-}
-
-.toggle-card span {
-  display: flex;
-  flex-direction: column;
+.toggle-row span {
+  display: grid;
   gap: 4px;
 }
 
-.toggle-card small {
-  color: rgb(95 99 126 / 0.86);
-  line-height: 1.45;
+.toggle-row strong {
+  font-size: 0.98rem;
 }
 
-.range-row {
+.toggle-row small {
+  color: color-mix(in oklab, currentColor 66%, transparent);
+  line-height: 1.5;
+}
+
+.toggle-row input {
+  inline-size: 1.1rem;
+  block-size: 1.1rem;
+  margin-top: 0.15rem;
+}
+
+.control-section--range {
+  padding-top: 4px;
+}
+
+.range-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
+  padding: 0.85rem 1rem;
+  border-radius: 1.15rem;
+  background: color-mix(in oklab, currentColor 4.5%, transparent);
 }
 
-.range-row output {
-  min-width: 42px;
+.range-shell output {
+  min-width: 3ch;
   text-align: right;
-  font-weight: 700;
-  color: rgb(71 73 97);
+  font-weight: 800;
 }
 
-.preview-stage {
+.range-shell input[type="range"] {
+  width: 100%;
+}
+
+.code-card {
+  overflow: auto;
+  padding: 1rem 1.05rem;
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, oklch(0.16 0.01 270) 92%, transparent);
+  color: oklch(0.92 0.015 285);
+  font-family: "Iosevka Curly", "SFMono-Regular", monospace;
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.preview-column {
   min-width: 0;
+}
+
+.preview-frame {
+  padding: clamp(10px, 1.5vw, 16px);
+  border-radius: 2rem;
 }
 
 .preview-background {
   width: 100%;
-  min-height: 560px;
-  border-radius: 32px;
+  min-height: min(76vh, 860px);
+  border-radius: 2.5rem;
+  overflow: hidden;
   box-shadow:
-    0 24px 80px rgb(96 115 173 / 0.18),
-    inset 0 1px 0 rgb(255 255 255 / 0.7);
-  border: 1px solid rgb(255 255 255 / 0.6);
+    inset 0 1px 0 rgb(255 255 255 / 0.24),
+    0 26px 70px rgb(31 23 67 / 0.14);
 }
 
 .preview-card {
-  min-height: 560px;
+  min-height: min(76vh, 860px);
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 16px;
-  padding: clamp(24px, 5vw, 48px);
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.22));
+  justify-items: center;
+  align-content: center;
+  gap: clamp(18px, 2vw, 28px);
+  padding: clamp(22px, 3vw, 38px);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.2)),
+    linear-gradient(135deg, rgb(255 255 255 / 0.08), transparent 42%);
 }
 
-.preview-badge {
+.preview-topline,
+.preview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-chip {
   display: inline-flex;
-  width: fit-content;
   align-items: center;
-  padding: 8px 14px;
+  padding: 0.65rem 0.95rem;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.72);
-  color: rgb(90 88 131);
-  font-size: 12px;
-  font-weight: 700;
+  color: rgb(51 45 82 / 0.88);
+  font-size: 0.78rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.preview-card h2 {
-  font-size: clamp(40px, 8vw, 88px);
-  line-height: 0.95;
+.preview-chip--soft {
+  background: rgb(255 255 255 / 0.2);
+  color: rgb(255 255 255 / 0.88);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    background: linear-gradient(180deg, rgb(12 16 29) 0%, rgb(16 20 34) 100%);
-    color: rgb(233 236 245);
-  }
-
-  .control-panel {
-    background: rgb(20 23 37 / 0.82);
-    border-color: rgb(255 255 255 / 0.08);
-    box-shadow: 0 24px 80px rgb(0 0 0 / 0.32);
-  }
-
-  .control-panel__header p,
-  .preview-card p,
-  .toggle-card small {
-    color: rgb(226 228 239 / 0.82);
-  }
-
-  .control-label,
-  .range-row output,
-  .segmented-control button {
-    color: rgb(227 221 251);
-  }
-
-  .segmented-control button,
-  .toggle-card,
-  .range-card,
-  .preview-badge {
-    background: rgb(255 255 255 / 0.08);
-    border-color: rgb(255 255 255 / 0.08);
-  }
-
-  .preview-badge {
-    color: rgb(228 218 255);
-  }
+.preview-copy {
+  display: flex;
+  justify-items: center;
+  align-content: center;
+  gap: 14px;
+  max-width: 36rem;
+  align-self: end;
 }
 
-@media (width <= 980px) {
-  .preview-layout {
+.preview-caption {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.preview-copy h2 {
+  margin: 0;
+  max-width: 10ch;
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+}
+
+.preview-copy p {
+  margin: 0;
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.7;
+  color: rgb(255 255 255 / 0.82);
+}
+
+.preview-stats {
+  gap: 12px;
+}
+
+.preview-stats div {
+  min-width: 140px;
+  padding: 0.95rem 1rem;
+  border-radius: 1.15rem;
+  background: rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.preview-stats span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.62);
+}
+
+.preview-stats strong {
+  font-size: 1rem;
+  font-weight: 800;
+  color: rgb(255 255 255 / 0.96);
+}
+
+.theme-dark .control-column,
+.theme-dark .preview-frame {
+  background: color-mix(in oklab, oklch(0.2 0.015 278) 88%, transparent);
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.22);
+}
+
+.theme-dark .hero-kicker {
+  color: oklch(0.82 0.07 318);
+}
+
+.theme-dark .ghost-button,
+.theme-dark .segmented-grid button,
+.theme-dark .toggle-row,
+.theme-dark .range-shell,
+.theme-dark .hero-note {
+  background: color-mix(in oklab, currentColor 7%, transparent);
+}
+
+.theme-dark .segmented-grid button.is-active {
+  background: oklch(0.9 0.03 90);
+  color: oklch(0.18 0.02 278);
+}
+
+.theme-dark .code-card {
+  background: color-mix(in oklab, oklch(0.1 0.01 270) 96%, transparent);
+  color: oklch(0.94 0.018 285);
+}
+
+@media (width <= 1100px) {
+  .studio-grid {
     grid-template-columns: 1fr;
+  }
+
+  .control-column {
+    position: static;
+  }
+}
+
+@media (width <= 860px) {
+  .hero-panel {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .hero-copy h1 {
+    max-width: 11ch;
   }
 }
 
 @media (width <= 640px) {
-  .preview-shell {
+  .demo-shell {
     padding: 16px;
-  }
-
-  .control-panel {
-    padding: 18px;
-    border-radius: 24px;
   }
 
   .preview-background,
   .preview-card {
-    min-height: 420px;
+    min-height: 520px;
+  }
+
+  .preview-copy h2 {
+    max-width: 11ch;
+  }
+
+  .preview-stats div {
+    min-width: calc(50% - 6px);
   }
 }

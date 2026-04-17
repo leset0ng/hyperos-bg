@@ -20,22 +20,22 @@ import {
 } from "./webgl/utils.js";
 
 export interface BgEffectBackgroundProps extends Omit<ComponentPropsWithoutRef<"div">, "content"> {
-  dynamicBackground: boolean;
+  dynamicBackground?: boolean;
   isFullSize?: boolean;
   effectBackground?: boolean;
   isOs3Effect?: boolean;
   deviceType?: DeviceType;
   colorScheme?: ColorScheme;
   alpha?: () => number;
-  bgStyle: CSSProperties;
+  bgStyle?: CSSProperties;
   content?: ReactNode | (() => ReactNode);
 }
 
 export function BgEffectBackground({
-  dynamicBackground,
+  dynamicBackground = true,
   isFullSize = false,
   effectBackground = true,
-  isOs3Effect = true,
+  isOs3Effect = false,
   deviceType = "PAD",
   colorScheme = "light",
   alpha = () => 1,

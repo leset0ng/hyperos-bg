@@ -95,12 +95,6 @@ export function BgEffectBackground({
     const uPointRadiusMulti = gl.getUniformLocation(program, "uPointRadiusMulti");
     const uSaturateOffset = gl.getUniformLocation(program, "uSaturateOffset");
     const uLightOffset = gl.getUniformLocation(program, "uLightOffset");
-    const uAlphaOffset = gl.getUniformLocation(program, "uAlphaOffset");
-    const uShadowColorMulti = gl.getUniformLocation(program, "uShadowColorMulti");
-    const uShadowColorOffset = gl.getUniformLocation(program, "uShadowColorOffset");
-    const uShadowNoiseScale = gl.getUniformLocation(program, "uShadowNoiseScale");
-    const uShadowOffset = gl.getUniformLocation(program, "uShadowOffset");
-
     const resize = () => {
       const rect = host.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -131,14 +125,6 @@ export function BgEffectBackground({
     gl.uniform1f(uPointRadiusMulti, preset.pointRadiusMulti ?? 1);
     gl.uniform1f(uSaturateOffset, preset.saturateOffset);
     gl.uniform1f(uLightOffset, preset.lightOffset);
-
-    if (isOs3Effect) {
-      gl.uniform1f(uAlphaOffset, preset.alphaOffset ?? 0.1);
-      gl.uniform1f(uShadowColorMulti, preset.shadowColorMulti ?? 0.3);
-      gl.uniform1f(uShadowColorOffset, preset.shadowColorOffset ?? 0.3);
-      gl.uniform1f(uShadowNoiseScale, preset.shadowNoiseScale ?? 5.0);
-      gl.uniform1f(uShadowOffset, preset.shadowOffset ?? 0.01);
-    }
 
     const startTime = performance.now();
     const colorStageInterval = preset.colorInterpPeriod * 500;

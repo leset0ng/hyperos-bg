@@ -122,8 +122,7 @@ button {
 }
 
 .hero-kicker,
-.section-heading span,
-.preview-caption {
+.section-heading span {
   font-size: 0.73rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -160,8 +159,7 @@ button {
 }
 
 .ghost-button,
-.segmented-grid button,
-.more-options-trigger {
+.segmented-grid button {
   appearance: none;
   border: 1px solid transparent;
   transition:
@@ -180,8 +178,7 @@ button {
 }
 
 .ghost-button:hover,
-.segmented-grid button:hover,
-.more-options-trigger:hover {
+.segmented-grid button:hover {
   transform: translateY(-1px);
 }
 
@@ -281,10 +278,6 @@ button {
   background: color-mix(in oklab, currentColor 4.5%, transparent);
 }
 
-.toggle-row--subtle {
-  background: color-mix(in oklab, currentColor 2.5%, transparent);
-}
-
 .toggle-row span {
   display: grid;
   gap: 4px;
@@ -304,47 +297,6 @@ button {
   block-size: 1.1rem;
   margin-top: 0.15rem;
   accent-color: oklch(0.48 0.1 282);
-}
-
-.more-options-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border-color: color-mix(in oklab, currentColor 10%, transparent);
-  color: color-mix(in oklab, currentColor 80%, transparent);
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-
-.more-options-trigger svg {
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.more-options-trigger svg.is-open {
-  transform: rotate(180deg);
-}
-
-.more-options-panel {
-  display: grid;
-  gap: 10px;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 280ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.more-options-panel.is-open {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-
-.more-options-panel > * {
-  overflow: hidden;
 }
 
 .control-section--range {
@@ -479,55 +431,9 @@ button {
   align-content: end;
   gap: clamp(18px, 2vw, 28px);
   padding: clamp(22px, 3vw, 38px);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.2)),
-    linear-gradient(135deg, rgb(255 255 255 / 0.08), transparent 42%);
 }
 
-.preview-topline,
-.preview-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.preview-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.65rem 0.95rem;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.72);
-  color: rgb(51 45 82 / 0.88);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.preview-chip--soft {
-  background: rgb(255 255 255 / 0.2);
-  color: rgb(255 255 255 / 0.88);
-}
-
-.preview-copy {
-  display: flex;
-  justify-items: center;
-  align-content: center;
-  gap: 14px;
-  max-width: 42rem;
-  align-self: end;
-}
-
-.preview-copy-inner {
-  display: grid;
-  gap: 14px;
-}
-
-.preview-caption {
-  color: rgb(255 255 255 / 0.72);
-}
-
-.preview-copy h2 {
+.preview-card h2 {
   margin: 0;
   max-width: 12ch;
   font-family: var(--font-display);
@@ -535,14 +441,7 @@ button {
   font-weight: 700;
   line-height: 0.96;
   letter-spacing: -0.05em;
-}
-
-.preview-copy p {
-  margin: 0;
-  max-width: 38rem;
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
-  line-height: 1.7;
-  color: rgb(255 255 255 / 0.82);
+  color: rgb(255 255 255 / 0.95);
 }
 
 .demo-footer {
@@ -641,13 +540,8 @@ button {
 .theme-dark .segmented-grid button,
 .theme-dark .toggle-row,
 .theme-dark .range-shell,
-.theme-dark .hero-note,
-.theme-dark .more-options-trigger {
+.theme-dark .hero-note {
   background: color-mix(in oklab, currentColor 7%, transparent);
-}
-
-.theme-dark .more-options-trigger {
-  border-color: color-mix(in oklab, currentColor 14%, transparent);
 }
 
 .theme-dark .segmented-grid button.is-active {
@@ -715,7 +609,7 @@ button {
     min-height: 520px;
   }
 
-  .preview-copy h2 {
+  .preview-card h2 {
     max-width: 12ch;
   }
 

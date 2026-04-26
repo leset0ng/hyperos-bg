@@ -13,33 +13,7 @@ uniform float uPointOffset;
 uniform float uPointRadiusMulti;
 uniform float uSaturateOffset;
 uniform float uLightOffset;
-uniform float uAlphaOffset;
-uniform float uShadowColorMulti;
-uniform float uShadowColorOffset;
-uniform float uShadowNoiseScale;
-uniform float uShadowOffset;
 varying vec2 vUv;
-
-vec4 accumulateColor(vec2 uv, float animTime) {
-  vec4 color = vec4(0.0);
-
-  for (int i = 0; i < 4; i++) {
-    vec4 pointColor = uColors[i];
-    pointColor.rgb *= pointColor.a;
-    vec2 point = uPoints[i].xy;
-    float rad = uPoints[i].z * uPointRadiusMulti;
-
-    point.x += sin(animTime + point.y) * uPointOffset;
-    point.y += cos(animTime + point.x) * uPointOffset;
-
-    float d = distance(uv, point);
-    float pct = smoothstep(rad, 0.0, d);
-    color.rgb = mix(color.rgb, pointColor.rgb, pct);
-    color.a = mix(color.a, pointColor.a, pct);
-  }
-
-  return color;
-}
 
 vec3 rgb2hsv(vec3 c) {
   vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -85,49 +59,37 @@ void main() {
   uv.xy -= uBound.xy;
   uv.xy /= uBound.zw;
 
-  vec4 color = accumulateColor(uv, uAnimTime);
-  vec4 shadowMask = accumulateColor(uv + vec2(uShadowOffset), uAnimTime * 0.92);
+  vec4 color = vec4(0.0);
   float noiseValue = perlin(normalizedUv * uNoiseScale + vec2(-uAnimTime, -uAnimTime));
-  float shadowNoise = perlin(
-    normalizedUv * uShadowNoiseScale + vec2(-uAnimTime * 0.35, uAnimTime * 0.22)
-  );
+
+  for (int i = 0; i < 4; i++) {
+    vec4 pointColor = uColors[i];
+    pointColor.rgb *= pointColor.a;
+    vec2 point = uPoints[i].xy;
+    float rad = uPoints[i].z * uPointRadiusMulti;
+
+    point.x += sin(uAnimTime + point.y) * uPointOffset;
+    point.y += cos(uAnimTime + point.x) * uPointOffset;
+
+    float d = distance(uv, point);
+    float pct = smoothstep(rad, 0.0, d);
+    color.rgb = mix(color.rgb, pointColor.rgb, pct);
+    color.a = mix(color.a, pointColor.a, pct);
+  }
 
   float oppositeNoise = smoothstep(0.0, 1.0, noiseValue);
-  float shadowFactor = smoothstep(0.0, 1.0, shadowNoise);
-  if (color.a > 0.001) {
-    color.rgb /= color.a;
-  } else {
-    color.rgb = vec3(0.0);
-  }
+  color.rgb /= color.a;
 
   vec3 hsv = rgb2hsv(color.rgb);
   hsv.y = mix(hsv.y, 0.0, oppositeNoise * uSaturateOffset);
   color.rgb = hsv2rgb(hsv);
   color.rgb += oppositeNoise * uLightOffset;
 
-  color.a = clamp(color.a + uAlphaOffset, 0.0, 1.0);
+  color.a = clamp(color.a, 0.0, 1.0);
   color.a *= uAlphaMulti;
 
-  float shadowAlpha = clamp(
-    shadowMask.a * (uShadowColorMulti + shadowFactor * uShadowColorOffset) + uAlphaOffset * 0.5,
-    0.0,
-    1.0
-  ) * uAlphaMulti * 0.55;
-  vec3 shadowRgb = clamp(
-    color.rgb * (0.35 + uShadowColorMulti) + vec3(shadowFactor * uShadowColorOffset * 0.12),
-    0.0,
-    1.0
-  );
+  color += (1.0 / 255.0) * gradientNoise(fragCoord.xy) - (0.5 / 255.0);
 
-  vec4 basePremul = vec4(color.rgb * color.a, color.a);
-  vec4 shadowPremul = vec4(shadowRgb * shadowAlpha, shadowAlpha);
-  vec4 combined = vec4(
-    shadowPremul.rgb * (1.0 - basePremul.a) + basePremul.rgb,
-    shadowPremul.a * (1.0 - basePremul.a) + basePremul.a
-  );
-
-  combined.rgb += ((1.0 / 255.0) * gradientNoise(fragCoord.xy) - (0.5 / 255.0)) * combined.a;
-
-  gl_FragColor = combined;
+  gl_FragColor = vec4(color.rgb * color.a, color.a);
 }
 `;

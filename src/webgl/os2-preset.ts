@@ -8,7 +8,7 @@ const SHARED_OS2 = {
 export const OS2_PRESETS: Record<DeviceType, { light: BgEffectPreset; dark: BgEffectPreset }> = {
   PHONE: {
     light: {
-      points: [0.67, 0.42, 0.88, 0.69, 0.75, 1.0, 0.14, 0.71, 0.95, 0.14, 0.27, 0.8],
+      points: [0.67, 0.42, 1.0, 0.69, 0.75, 1.0, 0.14, 0.71, 0.95, 0.14, 0.27, 0.8],
       colors1: [
         0.57, 0.76, 0.98, 1.0, 0.98, 0.85, 0.68, 1.0, 0.98, 0.75, 0.93, 1.0, 0.73, 0.7, 0.98, 1.0,
       ],

@@ -19,21 +19,20 @@ function getSystemColorScheme(): ColorScheme {
 function App() {
   const [deviceType, setDeviceType] = useState<DeviceType>("PAD");
   const [colorScheme, setColorScheme] = useState<ColorScheme>(getSystemColorScheme());
-  const [followsSystemColorScheme, setFollowsSystemColorScheme] = useState(true);
+  const [followsSystem, setFollowsSystem] = useState(true);
   const [isOs3Effect, setIsOs3Effect] = useState(true);
   const [dynamicBackground, setDynamicBackground] = useState(true);
   const [effectBackground, setEffectBackground] = useState(true);
   const [isFullSize, setIsFullSize] = useState(false);
   const [alphaValue, setAlphaValue] = useState(0.96);
   const [copied, setCopied] = useState(false);
-  const [showMore, setShowMore] = useState(false);
 
   const summary = useMemo(
     () =>
       [
         deviceType,
         colorScheme,
-        isOs3Effect ? "OS3 shader" : "OS2 shader",
+        isOs3Effect ? "OS3" : "OS2",
         dynamicBackground ? "dynamic" : "static",
       ].join(" · "),
     [colorScheme, deviceType, dynamicBackground, isOs3Effect],
@@ -50,7 +49,7 @@ function App() {
         `  deviceType="${deviceType}"`,
         `  colorScheme="${colorScheme}"`,
         `  alpha={() => ${alphaValue.toFixed(2)}}`,
-        "  bgStyle={{ opacity: 1 }}",
+        `  bgStyle={{ opacity: 1 }}`,
         "/>",
       ].join("\n"),
     [
@@ -75,46 +74,35 @@ function App() {
   };
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateColorScheme = () => {
-      if (!followsSystemColorScheme) {
-        return;
-      }
-      setColorScheme(mediaQuery.matches ? "dark" : "light");
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => {
+      if (followsSystem) setColorScheme(mq.matches ? "dark" : "light");
     };
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [followsSystem]);
 
-    updateColorScheme();
-    mediaQuery.addEventListener("change", updateColorScheme);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateColorScheme);
-    };
-  }, [followsSystemColorScheme]);
-
-  const applyManualColorScheme = (nextColorScheme: ColorScheme) => {
-    setFollowsSystemColorScheme(false);
-    setColorScheme(nextColorScheme);
+  const applyManual = (next: ColorScheme) => {
+    setFollowsSystem(false);
+    setColorScheme(next);
   };
 
-  const applySystemColorScheme = () => {
-    setFollowsSystemColorScheme(true);
+  const applySystem = () => {
+    setFollowsSystem(true);
     setColorScheme(getSystemColorScheme());
   };
 
   const reset = () => {
     setDeviceType("PAD");
-    setFollowsSystemColorScheme(true);
+    setFollowsSystem(true);
     setColorScheme(getSystemColorScheme());
     setIsOs3Effect(true);
     setDynamicBackground(true);
     setEffectBackground(true);
     setIsFullSize(false);
     setAlphaValue(0.96);
-    setShowMore(false);
   };
 
   return (
@@ -153,14 +141,10 @@ function App() {
                 deviceType={deviceType}
                 alpha={() => alphaValue}
                 style={{ borderRadius: 40 }}
-                bgStyle={{ opacity: 1, filter: isOs3Effect ? "saturate(1.02)" : "saturate(0.94)" }}
+                bgStyle={{ opacity: 1 }}
                 content={() => (
                   <div className="preview-card">
-                    <div className="preview-copy">
-                      <div className="preview-copy-inner">
-                        <h2>HyperOS Background</h2>
-                      </div>
-                    </div>
+                    <h2>HyperOS Background</h2>
                   </div>
                 )}
               />
@@ -198,27 +182,23 @@ function App() {
               </div>
               <div className="segmented-grid segmented-grid--3">
                 <button
-                  className={
-                    !followsSystemColorScheme && colorScheme === "light" ? "is-active" : undefined
-                  }
+                  className={!followsSystem && colorScheme === "light" ? "is-active" : undefined}
                   type="button"
-                  onClick={() => applyManualColorScheme("light")}
+                  onClick={() => applyManual("light")}
                 >
                   Light
                 </button>
                 <button
-                  className={
-                    !followsSystemColorScheme && colorScheme === "dark" ? "is-active" : undefined
-                  }
+                  className={!followsSystem && colorScheme === "dark" ? "is-active" : undefined}
                   type="button"
-                  onClick={() => applyManualColorScheme("dark")}
+                  onClick={() => applyManual("dark")}
                 >
                   Dark
                 </button>
                 <button
-                  className={followsSystemColorScheme ? "is-active" : undefined}
+                  className={followsSystem ? "is-active" : undefined}
                   type="button"
-                  onClick={applySystemColorScheme}
+                  onClick={applySystem}
                 >
                   System
                 </button>
@@ -229,75 +209,50 @@ function App() {
               <label className="toggle-row">
                 <span>
                   <strong>OS3 Effect</strong>
-                  <small>Use the newer preset and shadow-rich shader path.</small>
+                  <small>Use the newer OS3 preset and shader.</small>
                 </span>
                 <input
                   checked={isOs3Effect}
                   type="checkbox"
-                  onChange={(event) => setIsOs3Effect(event.currentTarget.checked)}
+                  onChange={(e) => setIsOs3Effect(e.currentTarget.checked)}
                 />
               </label>
 
               <label className="toggle-row">
                 <span>
                   <strong>Dynamic Background</strong>
-                  <small>Enable stage-based animated color transitions.</small>
+                  <small>Animate color transitions between stages.</small>
                 </span>
                 <input
                   checked={dynamicBackground}
                   type="checkbox"
-                  onChange={(event) => setDynamicBackground(event.currentTarget.checked)}
+                  onChange={(e) => setDynamicBackground(e.currentTarget.checked)}
                 />
               </label>
 
-              <button
-                className="more-options-trigger"
-                type="button"
-                onClick={() => setShowMore((s) => !s)}
-                aria-expanded={showMore}
-              >
-                <span>More options</span>
-                <svg
-                  className={showMore ? "is-open" : undefined}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
+              <label className="toggle-row">
+                <span>
+                  <strong>Effect Background</strong>
+                  <small>Toggle the shader on or off.</small>
+                </span>
+                <input
+                  checked={effectBackground}
+                  type="checkbox"
+                  onChange={(e) => setEffectBackground(e.currentTarget.checked)}
+                />
+              </label>
 
-              <div className={`more-options-panel ${showMore ? "is-open" : ""}`}>
-                <label className="toggle-row toggle-row--subtle">
-                  <span>
-                    <strong>Effect Background</strong>
-                    <small>Turn off the shader contribution but keep the host layout.</small>
-                  </span>
-                  <input
-                    checked={effectBackground}
-                    type="checkbox"
-                    onChange={(event) => setEffectBackground(event.currentTarget.checked)}
-                  />
-                </label>
-
-                <label className="toggle-row toggle-row--subtle">
-                  <span>
-                    <strong>Full Size</strong>
-                    <small>Stretch the draw region instead of keeping the 0.78 crop.</small>
-                  </span>
-                  <input
-                    checked={isFullSize}
-                    type="checkbox"
-                    onChange={(event) => setIsFullSize(event.currentTarget.checked)}
-                  />
-                </label>
-              </div>
+              <label className="toggle-row">
+                <span>
+                  <strong>Full Size</strong>
+                  <small>Stretch to full height instead of 78% crop.</small>
+                </span>
+                <input
+                  checked={isFullSize}
+                  type="checkbox"
+                  onChange={(e) => setIsFullSize(e.currentTarget.checked)}
+                />
+              </label>
             </div>
 
             <div className="control-section control-section--range">
@@ -312,7 +267,7 @@ function App() {
                   step="0.01"
                   type="range"
                   value={alphaValue}
-                  onChange={(event) => setAlphaValue(Number(event.currentTarget.value))}
+                  onChange={(e) => setAlphaValue(Number(e.currentTarget.value))}
                 />
                 <output>{alphaValue.toFixed(2)}</output>
               </div>
@@ -324,7 +279,6 @@ function App() {
                 type="button"
                 onClick={handleCopy}
                 aria-label="Copy code"
-                title="Copy code"
               >
                 {copied ? (
                   <>
@@ -398,7 +352,6 @@ function App() {
 }
 
 const rootElement = document.getElementById("root");
-
 if (!rootElement) {
   throw new Error("Root element #root was not found.");
 }

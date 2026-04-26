@@ -3,11 +3,6 @@ import type { BgEffectPreset, DeviceType } from "./types.js";
 const SHARED_OS3 = {
   pointRadiusMulti: 1,
   noiseScale: 1.5,
-  alphaOffset: 0.1,
-  shadowColorMulti: 0.3,
-  shadowColorOffset: 0.3,
-  shadowNoiseScale: 5.0,
-  shadowOffset: 0.01,
 } satisfies Partial<BgEffectPreset>;
 
 export const OS3_PRESETS: Record<DeviceType, { light: BgEffectPreset; dark: BgEffectPreset }> = {

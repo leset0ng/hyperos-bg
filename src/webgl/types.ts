@@ -12,11 +12,6 @@ export type BgEffectPreset = {
   pointOffset: number;
   pointRadiusMulti?: number;
   noiseScale?: number;
-  alphaOffset?: number;
-  shadowColorMulti?: number;
-  shadowColorOffset?: number;
-  shadowNoiseScale?: number;
-  shadowOffset?: number;
 };
 
 export type Bound = {

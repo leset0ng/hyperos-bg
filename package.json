@@ -1,6 +1,6 @@
 {
   "name": "hyperos-bg",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A React component that recreates the HyperOS-style animated background with WebGL.",
   "homepage": "https://github.com/leset0ng/hyperos-bg#readme",
   "bugs": {

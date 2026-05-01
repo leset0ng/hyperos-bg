@@ -11,5 +11,3 @@ export function getPreset(
   const presets = isOs3Effect ? OS3_PRESETS : OS2_PRESETS;
   return presets[deviceType][scheme];
 }
-
-export { OS2_PRESETS, OS3_PRESETS };

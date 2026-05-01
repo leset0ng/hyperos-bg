@@ -14,5 +14,3 @@ void main() {
 export function getFragmentShaderSource(isOs3Effect: boolean) {
   return isOs3Effect ? OS3_FRAGMENT_SHADER_SOURCE : OS2_FRAGMENT_SHADER_SOURCE;
 }
-
-export { OS2_FRAGMENT_SHADER_SOURCE, OS3_FRAGMENT_SHADER_SOURCE };

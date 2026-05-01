@@ -37,7 +37,6 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@typescript/native-preview": "7.0.0-dev.20260328.1",
-    "bumpp": "^11.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "typescript": "^6.0.2",

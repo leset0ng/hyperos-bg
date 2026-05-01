@@ -12,6 +12,8 @@
   font-family: var(--font-body);
   background: oklch(0.96 0.018 73);
   color: oklch(0.24 0.03 278);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -150,6 +152,7 @@ button {
   font-size: clamp(1rem, 1.4vw, 1.18rem);
   line-height: 1.65;
   color: color-mix(in oklab, currentColor 72%, transparent);
+  text-wrap: pretty;
 }
 
 .hero-actions {
@@ -164,9 +167,15 @@ button {
   border: 1px solid transparent;
   transition:
     transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    scale 180ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ghost-button:active,
+.segmented-grid button:active {
+  scale: 0.96;
 }
 
 .ghost-button {
@@ -200,9 +209,12 @@ button {
 .control-column,
 .preview-frame,
 .info-panel {
-  border: 1px solid color-mix(in oklab, currentColor 10%, transparent);
   background: color-mix(in oklab, oklch(0.99 0.005 80) 70%, transparent);
-  box-shadow: 0 28px 70px rgb(49 38 91 / 0.08);
+  box-shadow:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.06),
+    0px 1px 2px -1px rgba(0, 0, 0, 0.06),
+    0px 2px 4px 0px rgba(0, 0, 0, 0.04),
+    0 28px 70px rgb(49 38 91 / 0.08);
 }
 
 .control-column {
@@ -276,6 +288,7 @@ button {
   padding: 0.95rem 1rem;
   border-radius: var(--radius-md);
   background: color-mix(in oklab, currentColor 4.5%, transparent);
+  position: relative;
 }
 
 .toggle-row span {
@@ -290,6 +303,7 @@ button {
 .toggle-row small {
   color: color-mix(in oklab, currentColor 66%, transparent);
   line-height: 1.5;
+  text-wrap: pretty;
 }
 
 .toggle-row input {
@@ -385,12 +399,27 @@ button {
   cursor: pointer;
   transition:
     background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    scale 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.code-copy::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
 }
 
 .code-copy:hover {
   background: color-mix(in oklab, oklch(0.28 0.01 270) 90%, transparent);
   transform: translateY(-1px);
+}
+
+.code-copy:active {
+  scale: 0.96;
 }
 
 .code-card {
@@ -418,7 +447,7 @@ button {
 .preview-background {
   width: 100%;
   min-height: min(76vh, 860px);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.24),
@@ -455,7 +484,7 @@ button {
 .info-panel {
   display: grid;
   gap: 12px;
-  padding: 18px;
+  padding: 16px;
   border-radius: var(--radius-xl);
 }
 
@@ -491,6 +520,7 @@ button {
 .info-card small {
   color: color-mix(in oklab, currentColor 68%, transparent);
   line-height: 1.55;
+  text-wrap: pretty;
 }
 
 .info-actions {
@@ -512,6 +542,7 @@ button {
   font-weight: 700;
   transition:
     transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    scale 180ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     color 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -519,6 +550,10 @@ button {
 
 .info-action:hover {
   transform: translateY(-1px);
+}
+
+.info-action:active {
+  scale: 0.96;
 }
 
 .info-action--ghost {
@@ -529,7 +564,9 @@ button {
 .theme-dark .preview-frame,
 .theme-dark .info-panel {
   background: color-mix(in oklab, oklch(0.2 0.015 278) 88%, transparent);
-  box-shadow: 0 30px 80px rgb(0 0 0 / 0.22);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 30px 80px rgb(0 0 0 / 0.22);
 }
 
 .theme-dark .hero-kicker {
@@ -625,4 +662,34 @@ button {
     padding: 0.85rem 0.4rem;
     font-size: 0.9rem;
   }
+}
+
+/* Enter animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-panel {
+  animation: fadeInUp 400ms ease-out both;
+}
+
+.control-column {
+  animation: fadeInUp 400ms ease-out 100ms both;
+}
+
+.preview-column {
+  animation: fadeInUp 400ms ease-out 200ms both;
+}
+
+.demo-footer {
+  animation: fadeInUp 400ms ease-out 300ms both;
 }

@@ -140,7 +140,7 @@ function App() {
                 isOs3Effect={isOs3Effect}
                 deviceType={deviceType}
                 alpha={() => alphaValue}
-                style={{ borderRadius: 40 }}
+                style={{ borderRadius: "var(--radius-md)" }}
                 bgStyle={{ opacity: 1 }}
                 content={() => (
                   <div className="preview-card">

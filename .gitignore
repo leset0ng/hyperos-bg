@@ -3,3 +3,4 @@ dist
 site
 *.log
 .DS_Store
+.fallow

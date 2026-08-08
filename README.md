@@ -28,6 +28,7 @@ Many thanks to the original author(s) and the `compose-miuix-ui/miuix` project f
 - Built-in presets for `PHONE` and `PAD`
 - Built-in light and dark color schemes
 - Optional animated color-stage transitions
+- Custom color override via the `colors` prop
 - Configurable alpha and host/background styling
 - Content slot via `children` or the `content` prop
 - SSR-friendly markup output with browser-only WebGL setup in `useEffect`
@@ -66,6 +67,7 @@ import { BgEffectBackground } from "hyperos-bg";
 | `isOs3Effect`       | `boolean`                        | no       | `false`     | Switches between the newer OS3 shader/preset set and the older OS2 one.        |
 | `deviceType`        | `"PHONE" \| "PAD"`               | no       | `"PAD"`     | Selects the geometric preset family.                                           |
 | `colorScheme`       | `"light" \| "dark"`              | no       | `"light"`   | Selects the preset color scheme.                                               |
+| `colors`            | `Partial<BgEffectColors>`        | no       | `undefined` | Overrides preset colors. See [Custom colors](#custom-colors).                  |
 | `alpha`             | `() => number`                   | no       | `() => 1`   | Returns the current effect alpha. Values are clamped to `0..1`.                |
 | `content`           | `ReactNode \| (() => ReactNode)` | no       | `undefined` | Content rendered above the canvas. Takes priority over `children`.             |
 | `children`          | `ReactNode`                      | no       | `undefined` | Fallback content when `content` is not provided.                               |
@@ -143,6 +145,45 @@ export function Hero() {
 />
 ```
 
+### Custom colors
+
+The `colors` prop overrides the preset color stages. Each stage is an array of `16` floats: `4` RGBA colors (one per light blob) in `0..1` range. Provided stages replace the preset ones; omitted stages keep the preset values.
+
+```tsx
+import { BgEffectBackground } from "hyperos-bg";
+
+const customColors = {
+  colors1: [
+    0.55,
+    0.36,
+    0.96,
+    0.9, // blob 1: purple
+    0.93,
+    0.28,
+    0.6,
+    0.9, // blob 2: pink
+    0.23,
+    0.51,
+    0.96,
+    0.9, // blob 3: blue
+    0.96,
+    0.62,
+    0.04,
+    0.9, // blob 4: orange
+  ],
+  colors2: [
+    /* ... */
+  ],
+  colors3: [
+    /* ... */
+  ],
+};
+
+<BgEffectBackground isOs3Effect colors={customColors} bgStyle={{ opacity: 1 }} />;
+```
+
+When `dynamicBackground` is enabled, the effect transitions between `colors1` → `colors2` → `colors3` over time. Setting all three stages to the same array keeps the colors static. Keep the `colors` object stable (e.g. via `useMemo`) so the WebGL context is not recreated on every render.
+
 ## Rendering model
 
 - The component renders a wrapping `<div>`, an absolutely positioned `<canvas>`, and a foreground content layer.
@@ -199,7 +240,7 @@ tests/
 - Presets are selected by `deviceType`, `colorScheme`, and `isOs3Effect`.
 - Animated transitions are driven by a spring-smoothed stage index.
 - The default non-full-size mode draws into a cropped region (`78%` of host height).
-- The package exports only `BgEffectBackground` and `BgEffectBackgroundProps`.
+- The package exports `BgEffectBackground`, `BgEffectBackgroundProps`, and `BgEffectColors`.
 
 ## Validation checklist
 

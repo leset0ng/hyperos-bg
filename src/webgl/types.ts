@@ -1,6 +1,12 @@
 export type DeviceType = "PHONE" | "PAD";
 export type ColorScheme = "light" | "dark";
 
+export type BgEffectColors = {
+  colors1: number[];
+  colors2: number[];
+  colors3: number[];
+};
+
 export type BgEffectPreset = {
   points: number[];
   colors1: number[];

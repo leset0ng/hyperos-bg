@@ -3,11 +3,12 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
   useEffect,
+  useMemo,
   useRef,
 } from "react";
 import { getPreset } from "./webgl/presets.js";
 import { getFragmentShaderSource, VERTEX_SHADER_SOURCE } from "./webgl/shaders.js";
-import type { ColorScheme, DeviceType } from "./webgl/types.js";
+import type { BgEffectColors, ColorScheme, DeviceType } from "./webgl/types.js";
 import {
   clamp,
   createFullscreenBuffer,
@@ -26,6 +27,7 @@ export interface BgEffectBackgroundProps extends Omit<ComponentPropsWithoutRef<"
   isOs3Effect?: boolean;
   deviceType?: DeviceType;
   colorScheme?: ColorScheme;
+  colors?: Partial<BgEffectColors>;
   alpha?: () => number;
   bgStyle?: CSSProperties;
   content?: ReactNode | (() => ReactNode);
@@ -38,6 +40,7 @@ export function BgEffectBackground({
   isOs3Effect = false,
   deviceType = "PAD",
   colorScheme = "light",
+  colors,
   alpha = () => 1,
   content,
   children,
@@ -49,7 +52,18 @@ export function BgEffectBackground({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const preset = getPreset(deviceType, colorScheme, isOs3Effect);
+  const preset = useMemo(() => {
+    const base = getPreset(deviceType, colorScheme, isOs3Effect);
+    if (!colors) {
+      return base;
+    }
+    return {
+      ...base,
+      colors1: colors.colors1 ?? base.colors1,
+      colors2: colors.colors2 ?? base.colors2,
+      colors3: colors.colors3 ?? base.colors3,
+    };
+  }, [colorScheme, colors, deviceType, isOs3Effect]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

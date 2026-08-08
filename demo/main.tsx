@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BgEffectBackground } from "../src/index.js";
+import type { BgEffectColors } from "../src/index.js";
 import "./styles.css";
 
 const GITHUB_REPO_URL = "https://github.com/leset0ng/hyperos-bg";
@@ -8,6 +9,61 @@ const NPM_PACKAGE_URL = "https://www.npmjs.com/package/hyperos-bg";
 
 type DeviceType = "PHONE" | "PAD";
 type ColorScheme = "light" | "dark";
+type RgbaColor = [number, number, number, number];
+
+type CustomPalette = {
+  name: string;
+  swatches: RgbaColor[];
+  colors: BgEffectColors;
+};
+
+function toColorStage(swatches: RgbaColor[]): number[] {
+  return swatches.flatMap((color) => [...color]);
+}
+
+function makePalette(name: string, swatches: RgbaColor[]): CustomPalette {
+  const stage = toColorStage(swatches);
+  return { name, swatches, colors: { colors1: stage, colors2: stage, colors3: stage } };
+}
+
+const CUSTOM_PALETTES: CustomPalette[] = [
+  makePalette("Aurora", [
+    [0.55, 0.36, 0.96, 0.9],
+    [0.93, 0.28, 0.6, 0.9],
+    [0.23, 0.51, 0.96, 0.9],
+    [0.96, 0.62, 0.04, 0.9],
+  ]),
+  makePalette("Mint", [
+    [0.06, 0.72, 0.51, 0.9],
+    [0.2, 0.83, 0.6, 0.9],
+    [0.02, 0.71, 0.83, 0.9],
+    [0.05, 0.65, 0.91, 0.9],
+  ]),
+  makePalette("Sunset", [
+    [0.98, 0.45, 0.09, 0.9],
+    [0.98, 0.75, 0.14, 0.9],
+    [0.94, 0.27, 0.27, 0.9],
+    [0.93, 0.28, 0.6, 0.9],
+  ]),
+  makePalette("Glacier", [
+    [0.22, 0.74, 0.97, 0.9],
+    [0.51, 0.55, 0.97, 0.9],
+    [0.65, 0.71, 0.99, 0.9],
+    [0.49, 0.83, 0.99, 0.9],
+  ]),
+];
+
+const toSnippetStage = (stage: number[]) => {
+  const lines: string[] = [];
+  for (let i = 0; i < 4; i += 1) {
+    const color = stage
+      .slice(i * 4, i * 4 + 4)
+      .map((value) => value.toFixed(2))
+      .join(", ");
+    lines.push(`      ${color}, // blob ${i + 1}`);
+  }
+  return lines.join("\n");
+};
 
 function getSystemColorScheme(): ColorScheme {
   if (typeof window === "undefined") {
@@ -25,6 +81,7 @@ function App() {
   const [effectBackground, setEffectBackground] = useState(true);
   const [isFullSize, setIsFullSize] = useState(false);
   const [alphaValue, setAlphaValue] = useState(0.96);
+  const [customColors, setCustomColors] = useState<BgEffectColors | null>(null);
   const [copied, setCopied] = useState(false);
 
   const summary = useMemo(
@@ -38,30 +95,38 @@ function App() {
     [colorScheme, deviceType, dynamicBackground, isOs3Effect],
   );
 
-  const jsxSnippet = useMemo(
-    () =>
-      [
-        "<BgEffectBackground",
-        `  dynamicBackground={${dynamicBackground}}`,
-        `  effectBackground={${effectBackground}}`,
-        `  isOs3Effect={${isOs3Effect}}`,
-        `  isFullSize={${isFullSize}}`,
-        `  deviceType="${deviceType}"`,
-        `  colorScheme="${colorScheme}"`,
-        `  alpha={() => ${alphaValue.toFixed(2)}}`,
-        `  bgStyle={{ opacity: 1 }}`,
-        "/>",
-      ].join("\n"),
-    [
-      alphaValue,
-      colorScheme,
-      deviceType,
-      dynamicBackground,
-      effectBackground,
-      isFullSize,
-      isOs3Effect,
-    ],
-  );
+  const jsxSnippet = useMemo(() => {
+    const lines = [
+      "<BgEffectBackground",
+      `  dynamicBackground={${dynamicBackground}}`,
+      `  effectBackground={${effectBackground}}`,
+      `  isOs3Effect={${isOs3Effect}}`,
+      `  isFullSize={${isFullSize}}`,
+      `  deviceType="${deviceType}"`,
+      `  colorScheme="${colorScheme}"`,
+      `  alpha={() => ${alphaValue.toFixed(2)}}`,
+    ];
+    if (customColors) {
+      lines.push(
+        "  colors={{",
+        `    colors1: [\n${toSnippetStage(customColors.colors1)}\n    ],`,
+        `    colors2: [\n${toSnippetStage(customColors.colors2)}\n    ],`,
+        `    colors3: [\n${toSnippetStage(customColors.colors3)}\n    ],`,
+        "  }}",
+      );
+    }
+    lines.push("  bgStyle={{ opacity: 1 }}", "/>");
+    return lines.join("\n");
+  }, [
+    alphaValue,
+    colorScheme,
+    customColors,
+    deviceType,
+    dynamicBackground,
+    effectBackground,
+    isFullSize,
+    isOs3Effect,
+  ]);
 
   const handleCopy = async () => {
     try {
@@ -103,6 +168,7 @@ function App() {
     setEffectBackground(true);
     setIsFullSize(false);
     setAlphaValue(0.96);
+    setCustomColors(null);
   };
 
   return (
@@ -139,6 +205,7 @@ function App() {
                 colorScheme={colorScheme}
                 isOs3Effect={isOs3Effect}
                 deviceType={deviceType}
+                colors={customColors ?? undefined}
                 alpha={() => alphaValue}
                 style={{ borderRadius: "var(--radius-md)" }}
                 bgStyle={{ opacity: 1 }}
@@ -270,6 +337,42 @@ function App() {
                   onChange={(e) => setAlphaValue(Number(e.currentTarget.value))}
                 />
                 <output>{alphaValue.toFixed(2)}</output>
+              </div>
+            </div>
+
+            <div className="control-section control-section--palette">
+              <div className="section-heading">
+                <span>Custom</span>
+                <strong>Colors</strong>
+              </div>
+              <div className="palette-grid">
+                {CUSTOM_PALETTES.map((palette) => {
+                  const active = customColors === palette.colors;
+                  return (
+                    <button
+                      key={palette.name}
+                      aria-pressed={active}
+                      className={`palette-chip${active ? " is-active" : ""}`}
+                      type="button"
+                      onClick={() => setCustomColors(active ? null : palette.colors)}
+                    >
+                      <span className="palette-dots">
+                        {palette.swatches.map((color, index) => (
+                          <span
+                            key={index}
+                            className="palette-dot"
+                            style={{
+                              background: `rgb(${Math.round(color[0] * 255)}, ${Math.round(
+                                color[1] * 255,
+                              )}, ${Math.round(color[2] * 255)})`,
+                            }}
+                          />
+                        ))}
+                      </span>
+                      <small>{palette.name}</small>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

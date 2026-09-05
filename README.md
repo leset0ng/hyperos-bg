@@ -28,6 +28,7 @@ Many thanks to the original author(s) and the `compose-miuix-ui/miuix` project f
 - Built-in presets for `PHONE` and `PAD`
 - Built-in light and dark color schemes
 - Optional animated color-stage transitions
+- Pausable render loop that keeps the WebGL context warm
 - Custom color override via the `colors` prop
 - Configurable alpha and host/background styling
 - Content slot via `children` or the `content` prop
@@ -58,19 +59,20 @@ import { BgEffectBackground } from "hyperos-bg";
 
 `BgEffectBackground` extends `ComponentPropsWithoutRef<"div">` except for the native `content` prop.
 
-| Prop                | Type                             | Required | Default     | Description                                                                    |
-| ------------------- | -------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------ |
-| `dynamicBackground` | `boolean`                        | no       | `true`      | Enables animated stage-to-stage color interpolation.                           |
-| `bgStyle`           | `CSSProperties`                  | no       | `undefined` | Inline styles applied to the internal `<canvas>`.                              |
-| `isFullSize`        | `boolean`                        | no       | `false`     | Uses the full host height instead of the default cropped draw region.          |
-| `effectBackground`  | `boolean`                        | no       | `true`      | Disables the shader contribution when `false` while preserving layout/content. |
-| `isOs3Effect`       | `boolean`                        | no       | `false`     | Switches between the newer OS3 shader/preset set and the older OS2 one.        |
-| `deviceType`        | `"PHONE" \| "PAD"`               | no       | `"PAD"`     | Selects the geometric preset family.                                           |
-| `colorScheme`       | `"light" \| "dark"`              | no       | `"light"`   | Selects the preset color scheme.                                               |
-| `colors`            | `Partial<BgEffectColors>`        | no       | `undefined` | Overrides preset colors. See [Custom colors](#custom-colors).                  |
-| `alpha`             | `() => number`                   | no       | `() => 1`   | Returns the current effect alpha. Values are clamped to `0..1`.                |
-| `content`           | `ReactNode \| (() => ReactNode)` | no       | `undefined` | Content rendered above the canvas. Takes priority over `children`.             |
-| `children`          | `ReactNode`                      | no       | `undefined` | Fallback content when `content` is not provided.                               |
+| Prop                | Type                             | Required | Default     | Description                                                                                                               |
+| ------------------- | -------------------------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `dynamicBackground` | `boolean`                        | no       | `true`      | Enables animated stage-to-stage color interpolation.                                                                      |
+| `paused`            | `boolean`                        | no       | `false`     | Suspends the render loop without tearing down the WebGL context. See [Pausing the render loop](#pausing-the-render-loop). |
+| `bgStyle`           | `CSSProperties`                  | no       | `undefined` | Inline styles applied to the internal `<canvas>`.                                                                         |
+| `isFullSize`        | `boolean`                        | no       | `false`     | Uses the full host height instead of the default cropped draw region.                                                     |
+| `effectBackground`  | `boolean`                        | no       | `true`      | Disables the shader contribution when `false` while preserving layout/content.                                            |
+| `isOs3Effect`       | `boolean`                        | no       | `false`     | Switches between the newer OS3 shader/preset set and the older OS2 one.                                                   |
+| `deviceType`        | `"PHONE" \| "PAD"`               | no       | `"PAD"`     | Selects the geometric preset family.                                                                                      |
+| `colorScheme`       | `"light" \| "dark"`              | no       | `"light"`   | Selects the preset color scheme.                                                                                          |
+| `colors`            | `Partial<BgEffectColors>`        | no       | `undefined` | Overrides preset colors. See [Custom colors](#custom-colors).                                                             |
+| `alpha`             | `() => number`                   | no       | `() => 1`   | Returns the current effect alpha. Values are clamped to `0..1`.                                                           |
+| `content`           | `ReactNode \| (() => ReactNode)` | no       | `undefined` | Content rendered above the canvas. Takes priority over `children`.                                                        |
+| `children`          | `ReactNode`                      | no       | `undefined` | Fallback content when `content` is not provided.                                                                          |
 
 ## TypeScript usage
 
@@ -184,10 +186,36 @@ const customColors = {
 
 When `dynamicBackground` is enabled, the effect transitions between `colors1` → `colors2` → `colors3` over time. Setting all three stages to the same array keeps the colors static. Keep the `colors` object stable (e.g. via `useMemo`) so the WebGL context is not recreated on every render.
 
+### Pausing the render loop
+
+The component drives a `requestAnimationFrame` loop for as long as it is
+mounted. `requestAnimationFrame` only stops on its own when the whole document
+is hidden, so a background that is mounted but not actually on screen — an
+inactive tab of a keep-alive router, a collapsed panel, an off-screen preview —
+keeps shading every frame. Set `paused` to stop it:
+
+```tsx
+<BgEffectBackground paused={!isVisible} bgStyle={{ opacity: 1 }} />
+```
+
+`paused` is not the same as unmounting:
+
+- the WebGL context, compiled program and buffers stay alive, so resuming does
+  not pay for a context creation and a shader recompile;
+- the animation clock is frozen while paused, so the background picks up
+  exactly where it stopped instead of jumping forward by the paused duration;
+- the canvas keeps showing the last rendered frame, and is repainted if the
+  host is resized while paused.
+
+Unmount instead when you want to release GPU resources — for example when the
+background will not be shown again for a long time, or when you are close to
+the browser's per-page WebGL context limit.
+
 ## Rendering model
 
 - The component renders a wrapping `<div>`, an absolutely positioned `<canvas>`, and a foreground content layer.
 - WebGL setup happens only on the client inside `useEffect`.
+- Toggling `paused` starts and stops the loop in place; it never re-runs WebGL setup.
 - If WebGL is unavailable, the component still renders its layout and foreground content; only the shader effect is skipped.
 
 ## Local development

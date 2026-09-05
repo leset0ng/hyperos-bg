@@ -59,3 +59,19 @@ test("renders with custom colors prop", () => {
   expect(html).toContain('data-slot="bg-effect-background"');
   expect(html).toContain("<canvas");
 });
+
+test("renders while paused without leaking the prop to the DOM", () => {
+  const html = renderToStaticMarkup(
+    <BgEffectBackground
+      dynamicBackground={false}
+      effectBackground={false}
+      colorScheme="light"
+      bgStyle={{}}
+      paused
+    />,
+  );
+
+  expect(html).toContain('data-slot="bg-effect-background"');
+  expect(html).toContain("<canvas");
+  expect(html).not.toContain("paused");
+});

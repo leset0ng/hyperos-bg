@@ -80,6 +80,7 @@ function App() {
   const [dynamicBackground, setDynamicBackground] = useState(true);
   const [effectBackground, setEffectBackground] = useState(true);
   const [isFullSize, setIsFullSize] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [alphaValue, setAlphaValue] = useState(0.96);
   const [customColors, setCustomColors] = useState<BgEffectColors | null>(null);
   const [copied, setCopied] = useState(false);
@@ -102,6 +103,7 @@ function App() {
       `  effectBackground={${effectBackground}}`,
       `  isOs3Effect={${isOs3Effect}}`,
       `  isFullSize={${isFullSize}}`,
+      `  paused={${paused}}`,
       `  deviceType="${deviceType}"`,
       `  colorScheme="${colorScheme}"`,
       `  alpha={() => ${alphaValue.toFixed(2)}}`,
@@ -126,6 +128,7 @@ function App() {
     effectBackground,
     isFullSize,
     isOs3Effect,
+    paused,
   ]);
 
   const handleCopy = async () => {
@@ -202,6 +205,7 @@ function App() {
                 dynamicBackground={dynamicBackground}
                 isFullSize={isFullSize}
                 effectBackground={effectBackground}
+                paused={paused}
                 colorScheme={colorScheme}
                 isOs3Effect={isOs3Effect}
                 deviceType={deviceType}
@@ -318,6 +322,18 @@ function App() {
                   checked={isFullSize}
                   type="checkbox"
                   onChange={(e) => setIsFullSize(e.currentTarget.checked)}
+                />
+              </label>
+
+              <label className="toggle-row">
+                <span>
+                  <strong>Paused</strong>
+                  <small>Freeze the render loop; the WebGL context stays alive.</small>
+                </span>
+                <input
+                  checked={paused}
+                  type="checkbox"
+                  onChange={(e) => setPaused(e.currentTarget.checked)}
                 />
               </label>
             </div>

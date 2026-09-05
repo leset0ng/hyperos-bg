@@ -20,8 +20,26 @@ import {
   stepSpring,
 } from "./webgl/utils.js";
 
+interface RenderLoopControls {
+  start: () => void;
+  stop: () => void;
+}
+
 export interface BgEffectBackgroundProps extends Omit<ComponentPropsWithoutRef<"div">, "content"> {
   dynamicBackground?: boolean;
+  /**
+   * Suspends the render loop while keeping the WebGL context, program and
+   * buffers alive, so resuming does not pay for a shader recompile.
+   *
+   * The animation clock is frozen while paused, so the background resumes
+   * exactly where it stopped instead of jumping forward by the paused
+   * duration. The canvas keeps showing the last rendered frame.
+   *
+   * Useful when the background is mounted but not actually visible, e.g. on an
+   * inactive tab of a keep-alive router or an off-screen preview: without this
+   * the component keeps running a full-rate `requestAnimationFrame` loop.
+   */
+  paused?: boolean;
   isFullSize?: boolean;
   effectBackground?: boolean;
   isOs3Effect?: boolean;
@@ -35,6 +53,7 @@ export interface BgEffectBackgroundProps extends Omit<ComponentPropsWithoutRef<"
 
 export function BgEffectBackground({
   dynamicBackground = true,
+  paused = false,
   isFullSize = false,
   effectBackground = true,
   isOs3Effect = false,
@@ -51,6 +70,10 @@ export function BgEffectBackground({
 }: BgEffectBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  // `paused` is deliberately kept out of the setup effect's dependencies:
+  // toggling it must not tear the WebGL context down and build it again.
+  const pausedRef = useRef(paused);
+  const loopRef = useRef<RenderLoopControls | null>(null);
 
   const preset = useMemo(() => {
     const base = getPreset(deviceType, colorScheme, isOs3Effect);
@@ -109,6 +132,10 @@ export function BgEffectBackground({
     const uPointRadiusMulti = gl.getUniformLocation(program, "uPointRadiusMulti");
     const uSaturateOffset = gl.getUniformLocation(program, "uSaturateOffset");
     const uLightOffset = gl.getUniformLocation(program, "uLightOffset");
+    // `resize` runs synchronously below, before `render` and `clock` exist, so
+    // the repaint it needs while paused has to be guarded until setup is done.
+    let initialized = false;
+
     const resize = () => {
       const rect = host.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -117,6 +144,13 @@ export function BgEffectBackground({
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
       gl.viewport(0, 0, canvas.width, canvas.height);
+
+      // Assigning canvas.width clears the drawing buffer. While the loop is
+      // running the next frame refills it; while paused nothing would, so the
+      // canvas would go blank on any resize.
+      if (initialized && frameId === 0) {
+        render(clock());
+      }
     };
 
     const observer = new ResizeObserver(resize);
@@ -148,7 +182,15 @@ export function BgEffectBackground({
     let lastFrameTime = startTime;
     let nextStageTime = startTime + colorStageInterval;
 
-    const draw = (now: number) => {
+    // Milliseconds spent paused so far; subtracted from the raw rAF timestamp
+    // so the animation clock freezes instead of fast-forwarding on resume.
+    let pausedElapsed = 0;
+    let pausedSince: number | null = null;
+
+    /** Animation clock: real time minus paused time, frozen while paused. */
+    const clock = () => (pausedSince ?? performance.now()) - pausedElapsed;
+
+    const render = (now: number) => {
       const width = host.clientWidth || 1;
       const height = host.clientHeight || 1;
       const drawHeight = isFullSize ? height : height * 0.78;
@@ -190,13 +232,47 @@ export function BgEffectBackground({
       gl.uniform4fv(uColors, new Float32Array(colors));
       gl.uniform1f(uAlphaMulti, alphaValue);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-      frameId = requestAnimationFrame(draw);
     };
 
-    frameId = requestAnimationFrame(draw);
+    const loop = (rafTime: number) => {
+      render(rafTime - pausedElapsed);
+      frameId = requestAnimationFrame(loop);
+    };
+
+    const startLoop = () => {
+      if (frameId !== 0) {
+        return;
+      }
+      if (pausedSince !== null) {
+        pausedElapsed += performance.now() - pausedSince;
+        pausedSince = null;
+      }
+      frameId = requestAnimationFrame(loop);
+    };
+
+    const stopLoop = () => {
+      if (frameId === 0) {
+        return;
+      }
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+      pausedSince = performance.now();
+    };
+
+    loopRef.current = { start: startLoop, stop: stopLoop };
+    initialized = true;
+
+    if (pausedRef.current) {
+      // Mounted already paused: still paint one frame, otherwise the canvas
+      // would stay empty until something resumes it.
+      pausedSince = performance.now();
+      render(clock());
+    } else {
+      startLoop();
+    }
 
     return () => {
+      loopRef.current = null;
       cancelAnimationFrame(frameId);
       observer.disconnect();
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -218,6 +294,21 @@ export function BgEffectBackground({
     isOs3Effect,
     preset,
   ]);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+
+    const loop = loopRef.current;
+    if (!loop) {
+      return;
+    }
+
+    if (paused) {
+      loop.stop();
+    } else {
+      loop.start();
+    }
+  }, [paused]);
 
   const resolvedContent = resolveContent(content, children);
 
